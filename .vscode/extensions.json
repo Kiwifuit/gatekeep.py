@@ -5,6 +5,7 @@
     "ms-python.python",
     "eamodio.gitlens",
     "kevinrose.vsc-python-indent",
-    "njpwerner.autodocstring"
+    "njpwerner.autodocstring",
+    "sourcery.sourcery"
   ]
 }

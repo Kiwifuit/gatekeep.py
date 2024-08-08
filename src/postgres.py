@@ -11,12 +11,8 @@ def connect_db() -> Connection:
     Connection
         Connection to the database
     """
-    return connect(
-        host=environ["PSQL_HOST"],
-        database=environ["PSQL_NAME"],
-        user=environ["PSQL_USER"],
-        password=environ["PSQL_PASS"],
-    ).cursor()
+    # print(environ["PSQL_URL"])
+    return connect(environ["PSQL_URL"])
 
 
 def init_db(db: Cursor):

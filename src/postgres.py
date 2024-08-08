@@ -34,6 +34,7 @@ def init_db(db: Cursor):
         CREATE TABLE users (
         id UUID DEFAULT gen_random_uuid() UNIQUE,
         user_discord BIGINT NOT NULL UNIQUE,
+        user_name VARCHAR(32) NOT NULL,
         gcash CHAR(11) NOT NULL UNIQUE,
 
         PRIMARY KEY (id)
@@ -46,6 +47,7 @@ def init_db(db: Cursor):
         CREATE TABLE workers (
         id UUID DEFAULT gen_random_uuid() UNIQUE,
         worker_discord BIGINT NOT NULL UNIQUE,
+        worker_name VARCHAR(32) NOT NULL,
         able BOOLEAN DEFAULT true
         );
         """
@@ -74,7 +76,7 @@ def init_db(db: Cursor):
     )
 
 
-def users_add(db: Cursor, discord_id: int, gcash_number: str):
+def users_add(db: Cursor, discord_id: int, gcash_number: str, discord_name: str):
     """
     Adds a user
 
@@ -88,8 +90,8 @@ def users_add(db: Cursor, discord_id: int, gcash_number: str):
         GCash Number, provided by user
     """
     db.execute(
-        "INSERT INTO users (user_discord, gcash) VALUES (%s, %s)",
-        (discord_id, gcash_number),
+        "INSERT INTO users (user_discord, gcash, user_name) VALUES (%s, %s, %s)",
+        (discord_id, gcash_number, discord_name),
     )
 
 
@@ -117,7 +119,7 @@ def users_get(db: Cursor, discord_id: int) -> tuple[UUID, int, str]:
     ).fetchone()
 
 
-def workers_add(db: Cursor, discord_id: int):
+def workers_add(db: Cursor, discord_id: int, discord_name):
     """
     Registers a worker to gatekeeper
 
@@ -128,7 +130,10 @@ def workers_add(db: Cursor, discord_id: int):
     discord_id : int
         Discord User ID of the to-be worker
     """
-    db.execute("INSERT INTO workers (worker_discord) VALUES (%s)", (discord_id,))
+    db.execute(
+        "INSERT INTO workers (worker_discord, worker_name) VALUES (%s, %s)",
+        (discord_id, discord_name),
+    )
 
 
 def workers_set_available(db: Cursor, id: UUID, available: bool):
@@ -169,11 +174,9 @@ def workers_list_available(db: Cursor) -> list[tuple[UUID, str]]:
         List of worker data
     """
 
-    return (
-        db.execute(
-            "SELECT id, worker_discord FROM workers WHERE able = true"
-        ).fetchall(),
-    )
+    return db.execute(
+        "SELECT id, worker_discord FROM workers WHERE able = true"
+    ).fetchall()
 
 
 def jobs_add(db: Cursor, uid: UUID, title: str, content: str, payment: float):
@@ -267,7 +270,7 @@ def jobs_set_completed(db: Cursor, job_id: int):
 def jobs_list_all(db: Cursor):
     return db.execute(
         """
-        SELECT jid, worker_discord, user_discord, title, content, completed FROM jobs
+        SELECT jid, worker_name, user_name, title, content, completed FROM jobs
         INNER JOIN workers ON jobs.wid = workers.id
         INNER JOIN users on jobs.uid = users.id
         """

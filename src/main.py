@@ -28,11 +28,14 @@ if __name__ == "__main__":
     except DuplicateTable:
         print("db already initialized!")
 
-    users_add(cur, 755257427968000065, "09229329329")
-    workers_add(cur, 755257427968000064)
+    users_add(cur, 755257427968000065, "09229329329", "Company")
+    workers_add(cur, 755257427968000064, "Misery")
 
-    worker_uuid, _ = workers_list_available(cur)[0][0]
-    user_uuid, _, _ = users_get(cur, 755257427968000065)
+    for worker in workers_list_available(cur):
+        print(worker)
+
+    worker_uuid, _ = workers_list_available(cur)[0]
+    user_uuid, _, _, _ = users_get(cur, 755257427968000065)
 
     jobs_add(cur, user_uuid, "Test Homework", "make your mother", 500.0)
     jobs_add(cur, user_uuid, "Test Homework #2", "make your father", 5000.0)

@@ -20,13 +20,15 @@ async def on_ready():
     description="Creates a request",
     guild=discord.Object(id=GUILD_ID)
 )
-async def first_command(interaction: discord.Interaction):
+async def create_request(interaction: discord.Interaction):
     user = interaction.user
+    user_id = user.id
     try:
-        await user.send("Hello User, Please state your request. Ensure your request is both descriptive and concise for a better response.")
+        await user.send(f"Hello User `{user_id}`, Please provide your valid `GCash number` before proceeding.")
         await interaction.response.send_message("I've sent you a DM with further instructions!", ephemeral=True)
     except discord.Forbidden:
         await interaction.response.send_message("I couldn't send you a DM. Please check your DM settings.", ephemeral=True)
+
 @client.event
 async def on_ready():
     await tree.sync(guild=discord.Object(id=GUILD_ID))

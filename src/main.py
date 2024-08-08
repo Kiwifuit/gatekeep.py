@@ -49,8 +49,23 @@ async def on_message(message: discord.Message):
         return
 
     print("Success: Valid phone number received.")
-    await message.channel.send("Success: Your number is valid. Proceed with your request")
+    await message.channel.send("Success: Your number is valid. You can now proceed with your request. To stop the session at any time, type `!stop`." )
     active_users.remove(message.author.id)
+
+    def check(m):
+        return m.author == message.author and isinstance(m.channel, discord.DMChannel)
+
+    while True:
+        try:
+            user_message = await client.wait_for('message', check=check)
+            if user_message.content.lower() == '!stop':
+                await message.channel.send("Session ended. Thank you!")
+                print("Session stopped")
+                break
+            print(f"User {message.author.name} sent: {user_message.content}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            break
 
 def main():
     load_dotenv()

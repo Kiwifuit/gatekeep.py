@@ -22,7 +22,7 @@ async def on_ready():
 
 @tree.command(
     name="createrequest",
-    description="Creates a request for the user to provide their GCash number.",
+    description="Creates a request",
     guild=discord.Object(id=GUILD_ID)
 )
 async def create_request(interaction: discord.Interaction):
@@ -30,23 +30,25 @@ async def create_request(interaction: discord.Interaction):
     user_id = user.id
     active_users[user_id] = True
     try:
-        await user.send(f"Hello User `{user_id}`, Please provide your valid `GCash number` before proceeding.")
+        await user.send(f"Hello User `{user_id}`, Please provide your valid `GCash phone number` before proceeding.")
         await interaction.response.send_message("I've sent you a DM with further instructions!", ephemeral=True)
     except discord.Forbidden:
         await interaction.response.send_message("I couldn't send you a DM. Please check your DM settings.", ephemeral=True)
 
 @client.event
 async def on_message(message: discord.Message):
-    if isinstance(message.channel, discord.DMChannel) and message.author != client.user:
-        if message.author.id in active_users:
-            if re.match(PATTERN, message.content):
-                print("Success: Valid phone number received.")
-                await message.channel.send("Success: Your number is valid.")
-                del active_users[message.author.id]
-            else:
-                await message.channel.send("Invalid number. Please provide a valid Philippine phone number.")
-        else:
-            pass
+    if not isinstance(message.channel, discord.DMChannel) or message.author == client.user:
+        return
+
+    if message.author.id not in active_users:
+        return
+
+    if re.match(PATTERN, message.content):
+        print("Success: Valid phone number received.")
+        await message.channel.send("Success: Your number is valid. Proceed with your request")
+        del active_users[message.author.id]
+    else:
+        await message.channel.send("Invalid number. Please provide a valid Philippine phone number.")
 
 def main():
     load_dotenv()

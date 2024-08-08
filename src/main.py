@@ -4,9 +4,8 @@ from os import environ
 import discord
 from discord import app_commands
 
-load_dotenv()
 
-BOT_TOKEN = environ["BOT_TOKEN"]
+Guild_ID = "1270951090669490207"
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
@@ -19,7 +18,7 @@ async def on_ready():
 @tree.command(
     name="createrequest",
     description="Creates a request",
-    guild=discord.Object(id=1270951090669490207)
+    guild=discord.Object(id=Guild_ID)
 )
 async def first_command(interaction: discord.Interaction):
     user = interaction.user
@@ -30,7 +29,12 @@ async def first_command(interaction: discord.Interaction):
         await interaction.response.send_message("I couldn't send you a DM. Please check your DM settings.", ephemeral=True)
 @client.event
 async def on_ready():
-    await tree.sync(guild=discord.Object(id=1270951090669490207))
+    await tree.sync(guild=discord.Object(id=Guild_ID))
     print("Ready!")
 
-client.run(BOT_TOKEN)
+def main():
+    load_dotenv()
+    client.run(environ["BOT_TOKEN"])
+
+if __name__ == "__main__":
+    main()

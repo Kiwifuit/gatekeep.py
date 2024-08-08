@@ -12,7 +12,7 @@ intents.messages = True
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
-active_users = {}
+active_users = []
 
 @client.event
 async def on_ready():
@@ -27,10 +27,11 @@ async def on_ready():
 )
 async def create_request(interaction: discord.Interaction):
     user = interaction.user
-    user_id = user.id
-    active_users[user_id] = True
+    user_id = interaction.user.id
+    username = user.name
+    active_users.append(user_id)
     try:
-        await user.send(f"Hello User `{user_id}`, Please provide your valid `GCash phone number` before proceeding.")
+        await user.send(f"Hello User `{username}`, Please provide your valid `GCash phone number` before proceeding.")
         await interaction.response.send_message("I've sent you a DM with further instructions!", ephemeral=True)
     except discord.Forbidden:
         await interaction.response.send_message("I couldn't send you a DM. Please check your DM settings.", ephemeral=True)
@@ -43,12 +44,13 @@ async def on_message(message: discord.Message):
     if message.author.id not in active_users:
         return
 
-    if re.match(PATTERN, message.content):
-        print("Success: Valid phone number received.")
-        await message.channel.send("Success: Your number is valid. Proceed with your request")
-        del active_users[message.author.id]
-    else:
+    if not re.match(PATTERN, message.content):
         await message.channel.send("Invalid number. Please provide a valid Philippine phone number.")
+        return
+
+    print("Success: Valid phone number received.")
+    await message.channel.send("Success: Your number is valid. Proceed with your request")
+    active_users.remove(message.author.id)
 
 def main():
     load_dotenv()

@@ -70,3 +70,25 @@ def init_db(db: Cursor):
         );
         """
     )
+
+
+def users_add(db: Cursor, discord_id: int, gcash_number: str):
+    """
+    Adds a user
+
+    Parameters
+    ----------
+    db : Cursor
+        Cursor to the db
+    discord_id : int
+        Discord User's ID
+    gcash_number : str
+        GCash Number, provided by user
+    """
+    db.execute(
+        "INSERT INTO users (discord, gcash) VALUES (%s, %s)", (discord_id, gcash_number)
+    )
+
+
+def users_get(db: Cursor, discord_id: int) -> str:
+    return db.execute("SELECT id FROM users WHERE discord = %s", discord_id).fetchone()

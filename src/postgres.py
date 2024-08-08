@@ -16,6 +16,17 @@ def connect_db() -> Connection:
 
 
 def init_db(db: Cursor):
+    """
+    Initializes Gatekeep's Database
+
+    This function should only raise an
+    `psycopg.errors.DuplicateTable` error
+
+    Parameters
+    ----------
+    db : Cursor
+        cursor initialized by `connect_db`
+    """
     db.execute(
         """
         CREATE TABLE users (

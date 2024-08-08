@@ -5,7 +5,7 @@ import discord
 from discord import app_commands
 
 
-Guild_ID = "1270951090669490207"
+GUILD_ID = "1270951090669490207"
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
@@ -18,7 +18,7 @@ async def on_ready():
 @tree.command(
     name="createrequest",
     description="Creates a request",
-    guild=discord.Object(id=Guild_ID)
+    guild=discord.Object(id=GUILD_ID)
 )
 async def first_command(interaction: discord.Interaction):
     user = interaction.user
@@ -29,7 +29,7 @@ async def first_command(interaction: discord.Interaction):
         await interaction.response.send_message("I couldn't send you a DM. Please check your DM settings.", ephemeral=True)
 @client.event
 async def on_ready():
-    await tree.sync(guild=discord.Object(id=Guild_ID))
+    await tree.sync(guild=discord.Object(id=GUILD_ID))
     print("Ready!")
 
 def main():

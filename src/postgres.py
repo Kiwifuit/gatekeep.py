@@ -33,7 +33,7 @@ def init_db(db: Cursor):
         """
         CREATE TABLE users (
         id UUID DEFAULT gen_random_uuid() UNIQUE,
-        discord BIGINT NOT NULL UNIQUE,
+        user_discord BIGINT NOT NULL UNIQUE,
         gcash CHAR(11) NOT NULL UNIQUE,
 
         PRIMARY KEY (id)
@@ -45,7 +45,7 @@ def init_db(db: Cursor):
         """
         CREATE TABLE workers (
         id UUID DEFAULT gen_random_uuid() UNIQUE,
-        discord BIGINT NOT NULL UNIQUE,
+        worker_discord BIGINT NOT NULL UNIQUE,
         able BOOLEAN DEFAULT true
         );
         """
@@ -56,7 +56,7 @@ def init_db(db: Cursor):
         CREATE TABLE jobs (
         uid UUID NOT NULL,
         wid UUID,
-        jid SMALLSERIAL NOT NULL,
+        jid SMALLSERIAL NOT NULL UNIQUE,
         title VARCHAR(64) NOT NULL,
         content TEXT NOT NULL,
         payment REAL NOT NULL,
@@ -88,7 +88,8 @@ def users_add(db: Cursor, discord_id: int, gcash_number: str):
         GCash Number, provided by user
     """
     db.execute(
-        "INSERT INTO users (discord, gcash) VALUES (%s, %s)", (discord_id, gcash_number)
+        "INSERT INTO users (user_discord, gcash) VALUES (%s, %s)",
+        (discord_id, gcash_number),
     )
 
 
@@ -112,7 +113,7 @@ def users_get(db: Cursor, discord_id: int) -> tuple[UUID, int, str]:
         `str`: User GCash Number
     """
     return db.execute(
-        "SELECT * FROM users WHERE discord = %s", (discord_id,)
+        "SELECT * FROM users WHERE user_discord = %s", (discord_id,)
     ).fetchone()
 
 
@@ -127,7 +128,7 @@ def workers_add(db: Cursor, discord_id: int):
     discord_id : int
         Discord User ID of the to-be worker
     """
-    db.execute("INSERT INTO workers (discord) VALUES (%s)", (discord_id,))
+    db.execute("INSERT INTO workers (worker_discord) VALUES (%s)", (discord_id,))
 
 
 def workers_set_available(db: Cursor, id: UUID, available: bool):
@@ -170,9 +171,8 @@ def workers_list_available(db: Cursor) -> list[tuple[UUID, str]]:
 
     return (
         db.execute(
-                "SELECT (id, discord) FROM workers WHERE able = true"
-            ).fetchall(),
-        )
+            "SELECT id, worker_discord FROM workers WHERE able = true"
+        ).fetchall(),
     )
 
 
@@ -232,7 +232,43 @@ def jobs_list_available(db: Cursor) -> list[tuple[int, UUID, str, str, float]]:
 
 def jobs_set_worker(db: Cursor, worker_uuid: UUID, job_id: int):
     db.execute(
-                "SELECT (jid, uid, title, content, payment) FROM jobs WHERE wid IS NULL AND completed = false"
-            ).fetchall(),
-        )
+        """
+        UPDATE jobs
+        SET wid = %s
+        WHERE jid = %s
+        """,
+        (worker_uuid, job_id),
     )
+
+
+def jobs_get_worker(db: Cursor, worker_uuid: UUID):
+    return db.execute(
+        """
+        SELECT jid, user_discord, title, content, payment
+        FROM jobs
+        WHERE wid = %s
+        """,
+        (worker_uuid),
+    )
+
+
+def jobs_set_completed(db: Cursor, job_id: int):
+    return db.execute(
+        """
+        UPDATE jobs
+        SET completed = true
+        WHERE
+          jid = %s
+        """,
+        (job_id,),
+    )
+
+
+def jobs_list_all(db: Cursor):
+    return db.execute(
+        """
+        SELECT jid, worker_discord, user_discord, title, content, completed FROM jobs
+        INNER JOIN workers ON jobs.wid = workers.id
+        INNER JOIN users on jobs.uid = users.id
+        """
+    ).fetchall()

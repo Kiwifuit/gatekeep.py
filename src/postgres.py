@@ -225,10 +225,13 @@ def jobs_list_available(db: Cursor) -> list[tuple[int, UUID, str, str, float]]:
     - `str`: Additional context the job (job specifics, etc.)
     - `float`: The job's payment on completion
     """
-    return list(
-        map(
-            lambda r: r[0],
-            db.execute(
+    return db.execute(
+        "SELECT jid, uid, title, content, payment FROM jobs WHERE wid IS NULL AND completed = false"
+    ).fetchall()
+
+
+def jobs_set_worker(db: Cursor, worker_uuid: UUID, job_id: int):
+    db.execute(
                 "SELECT (jid, uid, title, content, payment) FROM jobs WHERE wid IS NULL AND completed = false"
             ).fetchall(),
         )

@@ -1,4 +1,6 @@
 from os import environ
+from uuid import UUID
+
 from psycopg import connect, Connection, Cursor
 
 
@@ -30,7 +32,7 @@ def init_db(db: Cursor):
     db.execute(
         """
         CREATE TABLE users (
-        id UUID DEFAULT gen_random_uuid(),
+        id UUID DEFAULT gen_random_uuid() UNIQUE,
         discord BIGINT NOT NULL UNIQUE,
         gcash CHAR(11) NOT NULL UNIQUE,
 
@@ -42,7 +44,7 @@ def init_db(db: Cursor):
     db.execute(
         """
         CREATE TABLE workers (
-        id UUID DEFAULT gen_random_uuid(),
+        id UUID DEFAULT gen_random_uuid() UNIQUE,
         discord BIGINT NOT NULL UNIQUE,
         able BOOLEAN DEFAULT true
         );
@@ -63,7 +65,7 @@ def init_db(db: Cursor):
         PRIMARY KEY(jid),
         CONSTRAINT job_owner
             FOREIGN KEY (uid)
-            REFERENCES users(id)
+            REFERENCES users(id),
         CONSTRAINT job_taker
             FOREIGN KEY (wid)
             REFERENCES workers(id)
@@ -90,5 +92,25 @@ def users_add(db: Cursor, discord_id: int, gcash_number: str):
     )
 
 
-def users_get(db: Cursor, discord_id: int) -> str:
-    return db.execute("SELECT id FROM users WHERE discord = %s", discord_id).fetchone()
+def users_get(db: Cursor, discord_id: int) -> tuple[UUID, int, str]:
+    """
+    Gets a user from the db
+
+    Parameters
+    ----------
+    db : Cursor
+        Cursor to the db
+    discord_id : int
+        ID of the discord user who sent the message
+
+    Returns
+    -------
+    tuple[UUID, int, str]
+        Discord User's information
+        `UUID`: User ID
+        `int`: User Discord ID
+        `str`: User GCash Number
+    """
+    return db.execute(
+        "SELECT * FROM users WHERE discord = %s", (discord_id,)
+    ).fetchone()

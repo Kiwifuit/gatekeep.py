@@ -59,7 +59,7 @@ def init_db(db: Cursor):
         jid SMALLSERIAL NOT NULL,
         title VARCHAR(64) NOT NULL,
         content TEXT NOT NULL,
-        payment MONEY NOT NULL,
+        payment REAL NOT NULL,
         completed BOOLEAN DEFAULT false,
 
         PRIMARY KEY(jid),
@@ -199,4 +199,39 @@ def jobs_add(db: Cursor, uid: UUID, title: str, content: str, payment: float):
     db.execute(
         "INSERT INTO jobs (uid, title, content, payment) VALUES (%s, %s, %s, %s)",
         (uid, title, content, payment),
+    )
+
+
+def jobs_list_available(db: Cursor) -> list[tuple[int, UUID, str, str, float]]:
+    """
+    Lists available jobs ready for taking
+
+    Jobs that are ready are jobs that
+    dont have a worker and are not completed
+
+    Parameters
+    ----------
+    db : Cursor
+        Cursor to the db
+
+    Returns
+    -------
+    list[tuple[int, UUID, str, str, float]]
+        Job Data
+
+    Job Data Breakdown
+    ------------------
+    - `int`: Job ID
+    - `UUID`: UUID of the job requestor
+    - `str`: Title of the job
+    - `str`: Additional context the job (job specifics, etc.)
+    - `float`: The job's payment on completion
+    """
+    return list(
+        map(
+            lambda r: r[0],
+            db.execute(
+                "SELECT (jid, uid, title, content, payment) FROM jobs WHERE wid IS NULL AND completed = false"
+            ).fetchall(),
+        )
     )

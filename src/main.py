@@ -10,6 +10,7 @@ from postgres import (
     workers_list_available,
     workers_set_available,
     jobs_add,
+    jobs_list_available,
 )
 
 if __name__ == "__main__":
@@ -30,4 +31,4 @@ if __name__ == "__main__":
     user_uuid, _, _ = users_get(cur, 755257427968000065)
 
     jobs_add(cur, user_uuid, "Test Homework", "make your mother", 500.0)
-    print(worker_uuid, user_uuid)
+    print(jobs_list_available(cur))

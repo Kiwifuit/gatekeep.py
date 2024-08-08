@@ -114,3 +114,17 @@ def users_get(db: Cursor, discord_id: int) -> tuple[UUID, int, str]:
     return db.execute(
         "SELECT * FROM users WHERE discord = %s", (discord_id,)
     ).fetchone()
+
+
+def workers_add(db: Cursor, discord_id: int):
+    """
+    Registers a worker to gatekeeper
+
+    Parameters
+    ----------
+    db : Cursor
+        Cursor to the db
+    discord_id : int
+        Discord User ID of the to-be worker
+    """
+    db.execute("INSERT INTO workers (discord) VALUES (%s)", (discord_id,))

@@ -6,6 +6,8 @@
     "eamodio.gitlens",
     "kevinrose.vsc-python-indent",
     "njpwerner.autodocstring",
-    "sourcery.sourcery"
+    "sourcery.sourcery",
+    "chouzz.vscode-better-align",
+    "shardulm94.trailing-spaces"
   ]
 }

@@ -128,3 +128,23 @@ def workers_add(db: Cursor, discord_id: int):
         Discord User ID of the to-be worker
     """
     db.execute("INSERT INTO workers (discord) VALUES (%s)", (discord_id,))
+
+
+def workers_set_availability(db: Cursor, id: UUID, available: bool):
+    """
+    Sets a worker's availability to `available`
+
+    By Default, a worker is available when it
+    is registered into the database. Doing this
+    unlists the user from the list of available workers
+
+    Parameters
+    ----------
+    db : Cursor
+        Cursor to DB
+    id : UUID
+        Worker ID
+    available : bool
+        Worker Availability. `False` to unlist, `True` to relist
+    """
+    db.execute("UPDATE workers SET able=%s WHERE id=%s", (available, id))

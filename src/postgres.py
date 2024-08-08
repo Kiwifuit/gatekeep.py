@@ -95,7 +95,7 @@ def users_add(db: Cursor, discord_id: int, gcash_number: str, discord_name: str)
     )
 
 
-def users_get(db: Cursor, discord_id: int) -> tuple[UUID, int, str]:
+def users_get(db: Cursor, discord_id: int):
     """
     Gets a user from the db
 
@@ -108,7 +108,7 @@ def users_get(db: Cursor, discord_id: int) -> tuple[UUID, int, str]:
 
     Returns
     -------
-    tuple[UUID, int, str]
+    Cursor[TupleRow]
         Discord User's information
         `UUID`: User ID
         `int`: User Discord ID
@@ -156,7 +156,7 @@ def workers_set_available(db: Cursor, id: UUID, available: bool):
     db.execute("UPDATE workers SET able=%s WHERE id=%s", (available, id))
 
 
-def workers_list_available(db: Cursor) -> list[tuple[UUID, str]]:
+def workers_list_available(db: Cursor):
     """
     Lists available workers
 
@@ -170,7 +170,7 @@ def workers_list_available(db: Cursor) -> list[tuple[UUID, str]]:
 
     Returns
     -------
-    list[tuple[UUID, str]]
+    Cursor[TupleRow]
         List of worker data
     """
 
@@ -203,7 +203,7 @@ def jobs_add(db: Cursor, uid: UUID, title: str, content: str, payment: float):
     )
 
 
-def jobs_list_available(db: Cursor) -> list[tuple[int, UUID, str, str, float]]:
+def jobs_list_available(db: Cursor):
     """
     Lists available jobs ready for taking
 
@@ -217,10 +217,10 @@ def jobs_list_available(db: Cursor) -> list[tuple[int, UUID, str, str, float]]:
 
     Returns
     -------
-    list[tuple[int, UUID, str, str, float]]
+    Cursor[TupleRow]
         Job Data
 
-    Job Data Breakdown
+    Row Breakdown
     ------------------
     - `int`: Job ID
     - `UUID`: UUID of the job requestor
@@ -270,8 +270,16 @@ def jobs_get_worker(db: Cursor, worker_uuid: UUID):
 
     Returns
     -------
-    !TODO
-        job data
+    Cursor[TupleRow]
+        Job data
+
+    Row Breakdown
+    --------------
+    `int`: Job ID
+    `str`: User's discord name
+    `str`: Job title
+    `str`: Job specifics
+    `float`: How much the user is willing to pay
     """
     return db.execute(
         """
@@ -291,6 +299,11 @@ def jobs_set_completed(db: Cursor, job_id: int):
     it is up to the function users to ensure that
     this function runs as intended, however you wish
     to define it.
+
+    Despite intuition, this function does not delete
+    data. The only way that job data is deleted is by
+    accessing the raw PostgreSQL database and deleting
+    data there.
 
     Parameters
     ----------
@@ -324,9 +337,18 @@ def jobs_list_all(db: Cursor):
 
     Returns
     -------
-    _type_
+    Cursor[TupleRow]
         Job data, including resolved user and worker
         names
+
+    Row Breakdown
+    -------------
+    `int`: Job ID
+    `str`: Worker assigned to job
+    `str`: User who requested job
+    `str`: Job title
+    `str`: Job Specifics
+    `bool`: Whether or not the job has been marked as completed
     """
     return db.execute(
         """

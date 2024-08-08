@@ -130,7 +130,7 @@ def workers_add(db: Cursor, discord_id: int):
     db.execute("INSERT INTO workers (discord) VALUES (%s)", (discord_id,))
 
 
-def workers_set_availability(db: Cursor, id: UUID, available: bool):
+def workers_set_available(db: Cursor, id: UUID, available: bool):
     """
     Sets a worker's availability to `available`
 
@@ -148,3 +148,31 @@ def workers_set_availability(db: Cursor, id: UUID, available: bool):
         Worker Availability. `False` to unlist, `True` to relist
     """
     db.execute("UPDATE workers SET able=%s WHERE id=%s", (available, id))
+
+
+def workers_list_available(db: Cursor) -> list[tuple[UUID, str]]:
+    """
+    Lists available workers
+
+    Workers whose availability is `False`
+    will not show up in this function
+
+    Parameters
+    ----------
+    db : Cursor
+        Cursor to the db
+
+    Returns
+    -------
+    list[tuple[UUID, str]]
+        List of worker data
+    """
+
+    return list(
+        map(
+            lambda r: r[0],
+            db.execute(
+                "SELECT (id, discord) FROM workers WHERE able = true"
+            ).fetchall(),
+        )
+    )

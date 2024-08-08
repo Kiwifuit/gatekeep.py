@@ -234,6 +234,19 @@ def jobs_list_available(db: Cursor) -> list[tuple[int, UUID, str, str, float]]:
 
 
 def jobs_set_worker(db: Cursor, worker_uuid: UUID, job_id: int):
+    """
+    Sets a job as being worked on by a worker
+
+    Parameters
+    ----------
+    db: Cursor
+        Cursor to the db
+    worker_uuid: UUID
+        The UUID of the worker assigned
+    job_id: int
+        The ID of the job being assigned
+    """
+
     db.execute(
         """
         UPDATE jobs
@@ -245,6 +258,21 @@ def jobs_set_worker(db: Cursor, worker_uuid: UUID, job_id: int):
 
 
 def jobs_get_worker(db: Cursor, worker_uuid: UUID):
+    """
+    Gets the jobs currently assigned to the worker
+
+    Parameters
+    ----------
+    db : Cursor
+        Cursor to the db
+    worker_uuid : UUID
+        UUID of the worker to filter
+
+    Returns
+    -------
+    !TODO
+        job data
+    """
     return db.execute(
         """
         SELECT jid, user_discord, title, content, payment
@@ -256,7 +284,22 @@ def jobs_get_worker(db: Cursor, worker_uuid: UUID):
 
 
 def jobs_set_completed(db: Cursor, job_id: int):
-    return db.execute(
+    """
+    Sets the job as completed
+
+    This function provides no authentication WHATSOEVER
+    it is up to the function users to ensure that
+    this function runs as intended, however you wish
+    to define it.
+
+    Parameters
+    ----------
+    db : Cursor
+        Cursor to the Database
+    job_id : int
+        Job ID of the job to mark as completed
+    """
+    db.execute(
         """
         UPDATE jobs
         SET completed = true
@@ -268,6 +311,23 @@ def jobs_set_completed(db: Cursor, job_id: int):
 
 
 def jobs_list_all(db: Cursor):
+    """
+    Lists all jobs currently listed in the system
+
+    Since `jobs_set_completed` does not delete data
+    whatsoever, this also includes finished jobs
+
+    Parameters
+    ----------
+    db : Cursor
+        Cursor to the Database
+
+    Returns
+    -------
+    _type_
+        Job data, including resolved user and worker
+        names
+    """
     return db.execute(
         """
         SELECT jid, worker_name, user_name, title, content, completed FROM jobs

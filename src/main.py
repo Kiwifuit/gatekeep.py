@@ -1,5 +1,4 @@
 from dotenv import load_dotenv
-from os import environ
 from psycopg.errors import DuplicateTable
 
 from postgres import connect_db, init_db, users_add, users_get

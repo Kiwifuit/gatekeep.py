@@ -176,3 +176,27 @@ def workers_list_available(db: Cursor) -> list[tuple[UUID, str]]:
             ).fetchall(),
         )
     )
+
+
+def jobs_add(db: Cursor, uid: UUID, title: str, content: str, payment: float):
+    """
+    Adds a job in the database,
+    queueing it for work
+
+    Parameters
+    ----------
+    db : Cursor
+        Cursor to the database
+    uid : UUID
+        UUID of the user requesting the job
+    title : str
+        Title of the job
+    content : str
+        Job context/content
+    payment : float
+        How much the user is willing to pay for the job
+    """
+    db.execute(
+        "INSERT INTO jobs (uid, title, content, payment) VALUES (%s, %s, %s, %s)",
+        (uid, title, content, payment),
+    )

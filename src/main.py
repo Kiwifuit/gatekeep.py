@@ -9,6 +9,7 @@ from postgres import (
     workers_add,
     workers_list_available,
     workers_set_available,
+    jobs_add,
 )
 
 if __name__ == "__main__":
@@ -22,13 +23,11 @@ if __name__ == "__main__":
     except DuplicateTable:
         print("db already initialized!")
 
+    users_add(cur, 755257427968000065, "09229329329")
     workers_add(cur, 755257427968000064)
-    workers_add(cur, 755257427968000065)
-    workers_add(cur, 755257427968000066)
-    workers_add(cur, 755257427968000067)
 
-    # Unlist 2nd worker
-    workers_set_available(cur, workers_list_available(cur)[1][0], False)
+    worker_uuid = workers_list_available(cur)[0][0]
+    user_uuid, _, _ = users_get(cur, 755257427968000065)
 
-    for worker in workers_list_available(cur):
-        print(worker)
+    jobs_add(cur, user_uuid, "Test Homework", "make your mother", 500.0)
+    print(worker_uuid, user_uuid)

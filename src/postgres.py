@@ -168,10 +168,8 @@ def workers_list_available(db: Cursor) -> list[tuple[UUID, str]]:
         List of worker data
     """
 
-    return list(
-        map(
-            lambda r: r[0],
-            db.execute(
+    return (
+        db.execute(
                 "SELECT (id, discord) FROM workers WHERE able = true"
             ).fetchall(),
         )

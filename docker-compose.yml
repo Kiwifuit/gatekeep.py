@@ -1,0 +1,11 @@
+services:
+  bot:
+    image: ghcr.io/kiwifuit/gatekeep.py:latest
+    env_file:
+      - ".env"
+  data:
+    image: postgres:14.12-alpine
+    ports:
+      - "1020:5432"
+    env_file:
+      - ".env"

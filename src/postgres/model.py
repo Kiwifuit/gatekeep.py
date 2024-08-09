@@ -92,19 +92,10 @@ class Job:
     This value is generated automatically
     """
 
-    uid: UUID
+    user: str
     """
-    The UUID of the `User` who requested
+    The name of the `User` who requested
     the job
-    """
-
-    wid: UUID
-    """
-    The UUID of the `Worker` who accepted
-    the job.
-
-    This value may be `None` if the job
-    has not been accepted
     """
 
     title: str
@@ -127,12 +118,6 @@ class Job:
     How much the `User` is willing
     to pay the `Worker` who accepts
     the job
-    """
-
-    completed: bool
-    """
-    Whether or not the job has been completed
-    and the finished project has been sent out
     """
 
 
@@ -169,3 +154,29 @@ class DisplayableJob:
     Whether or not the job has been completed
     and the finished project has been sent out
     """
+
+
+@dataclass(frozen=True, repr=True)
+class UnregisteredJob:
+    user: User
+    title: str
+    content: str
+    payment: float
+
+
+@dataclass(frozen=True, repr=True)
+class AvailableJob:
+    jid: int
+    user: str
+    title: str
+    content: str
+    payment: float
+
+
+@dataclass(frozen=True, repr=True)
+class WorkerJob:
+    jid: int
+    user: str
+    title: str
+    content: str
+    payment: float

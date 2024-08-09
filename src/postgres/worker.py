@@ -37,7 +37,10 @@ def workers_set_available(db: Connection, worker: Worker, available: bool):
     available : bool
         Worker Availability. `False` to unlist, `True` to relist
     """
-    db.execute("UPDATE workers SET able=%s WHERE id=%s", (available, worker.id))
+    db.execute(
+        "UPDATE workers SET able=%s WHERE id=%s AND registered = true",
+        (available, worker.id),
+    )
 
 
 def workers_list_available(db: Connection) -> list[Worker]:
@@ -60,5 +63,5 @@ def workers_list_available(db: Connection) -> list[Worker]:
 
     cur = db.cursor(row_factory=class_row(Worker))
     return cur.execute(
-        "SELECT id, discord, name FROM workers WHERE able = true"
+        "SELECT id, discord, name FROM workers WHERE able = true AND registered = true"
     ).fetchall()

@@ -49,5 +49,5 @@ def users_get(db: Connection, discord_id: int) -> User:
     conn = db.cursor(row_factory=class_row(User))
 
     return conn.execute(
-        "SELECT * FROM users WHERE discord = %s", (discord_id,)
+        "SELECT * FROM users WHERE discord = %s AND registered = true", (discord_id,)
     ).fetchone()

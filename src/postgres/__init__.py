@@ -46,6 +46,7 @@ def init_db(db: Connection):
         discord BIGINT NOT NULL UNIQUE,
         name VARCHAR(32) NOT NULL,
         gcash CHAR(11) NOT NULL UNIQUE,
+        registered BOOLEAN DEFAULT true,
 
         PRIMARY KEY (id)
         );
@@ -58,7 +59,10 @@ def init_db(db: Connection):
         id UUID DEFAULT gen_random_uuid() UNIQUE,
         discord BIGINT NOT NULL UNIQUE,
         name VARCHAR(32) NOT NULL,
-        able BOOLEAN DEFAULT true
+        able BOOLEAN DEFAULT true,
+        registered BOOLEAN DEFAULT true,
+
+        PRIMARY KEY (id)
         );
         """
     )

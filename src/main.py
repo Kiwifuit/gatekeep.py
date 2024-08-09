@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from psycopg.errors import DuplicateTable
+from os import environ
 
 from postgres import (
     connect_db,
@@ -22,8 +23,16 @@ from postgres import (
 )
 
 
-def main():
+def detect_prod():
+    if environ.get("PRODUCTION", False):
+        print("Gatekeep is running in production")
+        return
+    print("Detected in development mode. Loading dotenv")
     load_dotenv()
+
+
+def main():
+    detect_prod()
 
     conn = connect_db()
     print("initializing db")

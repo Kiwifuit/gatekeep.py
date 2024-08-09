@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "ms-python.black-formatter",
+    "ms-python.vscode-pylance",
+    "ms-python.python",
+    "eamodio.gitlens",
+    "kevinrose.vsc-python-indent",
+    "njpwerner.autodocstring",
+    "sourcery.sourcery",
+    "chouzz.vscode-better-align",
+    "shardulm94.trailing-spaces"
+  ]
+}

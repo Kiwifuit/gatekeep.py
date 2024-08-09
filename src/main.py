@@ -2,7 +2,9 @@ from dotenv import load_dotenv
 from os import environ
 import re
 import discord
+from discord.ext import commands
 from discord import app_commands
+from commands import CreateRequest
 
 PATTERN = r"^(09\d{9}|09\d{2} \d{3} \d{4}|639\d{9}|639\d{2} \d{3} \d{4}|\+639\d{9}|\+639\d{2} \d{3} \d{4})$"
 GUILD_ID = "1270951090669490207"
@@ -11,30 +13,16 @@ intents = discord.Intents.default()
 intents.messages = True
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
+bot = commands.Bot(command_prefix='', intents=intents)
 
 active_users = []
 
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
+    await bot.add_cog(CreateRequest(bot))
     await tree.sync(guild=discord.Object(id=GUILD_ID))
     print("Ready!")
-
-@tree.command(
-    name="createrequest",
-    description="Creates a request",
-    guild=discord.Object(id=GUILD_ID)
-)
-async def create_request(interaction: discord.Interaction):
-    user = interaction.user
-    user_id = interaction.user.id
-    username = user.name
-    active_users.append(user_id)
-    try:
-        await user.send(f"Hello User `{username}`, Please provide your valid `GCash phone number` before proceeding.")
-        await interaction.response.send_message("I've sent you a DM with further instructions!", ephemeral=True)
-    except discord.Forbidden:
-        await interaction.response.send_message("I couldn't send you a DM. Please check your DM settings.", ephemeral=True)
 
 @client.event
 async def on_message(message: discord.Message):
@@ -62,7 +50,7 @@ async def on_message(message: discord.Message):
                 await message.channel.send("Session ended. Thank you!")
                 print("Session stopped")
                 break
-            print(f"User {message.author.name} sent: {user_message.content}")
+            print(f"USER {message.author.name} sent: {user_message.content}")
         except Exception as e:
             print(f"An error occurred: {e}")
             break

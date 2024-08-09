@@ -10,6 +10,7 @@ from postgres import (
     workers_add,
     workers_delete,
     workers_list_available,
+    workers_list_all,
     workers_set_available,
     jobs_add,
     jobs_list_available,
@@ -69,6 +70,6 @@ if __name__ == "__main__":
     users_delete(conn, user)
     print(users_get(conn, 755257427968000065))
 
-    for worker in workers_list_available(conn):
+    for worker in workers_list_all(conn):
         workers_delete(conn, worker)
-    print(workers_list_available(conn))
+    print(workers_list_all(conn))

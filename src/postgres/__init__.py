@@ -5,6 +5,7 @@ from .worker import (
     workers_add,
     workers_delete,
     workers_list_available,
+    workers_list_all,
     workers_set_available,
 )
 from .job import (

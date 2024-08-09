@@ -67,6 +67,34 @@ def workers_list_available(db: Connection) -> list[Worker]:
     ).fetchall()
 
 
+def workers_list_all(db: Connection) -> list[Worker]:
+    """
+    Lists all workers
+
+    The difference between this function
+    and `workers_list_available` is that
+    the latter lists workers that are both
+    available and registered, whereas
+    this function only lists registered
+    workers, allowing you to see all workers,
+    active or not
+
+    Parameters
+    ----------
+    db : Connection
+        Connection to the database
+
+    Returns
+    -------
+    list[Worker]
+        List of worker data
+    """
+    cur = db.cursor(row_factory=class_row(Worker))
+    return cur.execute(
+        "SELECT id, discord, name FROM workers WHERE registered = true"
+    ).fetchall()
+
+
 def workers_delete(db: Connection, worker: Worker):
     """
     Effectively deletes a worker

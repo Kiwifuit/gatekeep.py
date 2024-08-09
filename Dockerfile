@@ -4,5 +4,7 @@ WORKDIR /srv
 
 COPY . .
 
+ENV PRODUCTION=True
+
 RUN pip install -r requirements.txt
 ENTRYPOINT [ "/usr/local/bin/python", "src/main.py" ]

@@ -1,7 +1,12 @@
 from psycopg import connect, Connection, Cursor
 from os import environ
 from .user import users_add, users_get, users_delete
-from .worker import workers_add, workers_list_available, workers_set_available
+from .worker import (
+    workers_add,
+    workers_delete,
+    workers_list_available,
+    workers_set_available,
+)
 from .job import (
     jobs_add,
     jobs_get_worker,

@@ -65,3 +65,30 @@ def workers_list_available(db: Connection) -> list[Worker]:
     return cur.execute(
         "SELECT id, discord, name FROM workers WHERE able = true AND registered = true"
     ).fetchall()
+
+
+def workers_delete(db: Connection, worker: Worker):
+    """
+    Effectively deletes a worker
+
+    For the sake of keeping records, the
+    worker data isn't really deleted, but its
+    data set to the defaults, and a flag is raised
+
+    Parameters
+    ----------
+    db : Connection
+        Connection to the database
+    worker : Worker
+        Worker to "delete"
+    """
+    db.execute(
+        """
+        UPDATE workers
+        SET
+          able = false,
+          registered = false
+        WHERE id = %s
+        """,
+        (worker.id,),
+    )

@@ -49,5 +49,34 @@ def users_get(db: Connection, discord_id: int) -> User:
     conn = db.cursor(row_factory=class_row(User))
 
     return conn.execute(
-        "SELECT * FROM users WHERE discord = %s AND registered = true", (discord_id,)
+        "SELECT id, discord, name, gcash FROM users WHERE discord = %s AND registered = true",
+        (discord_id,),
     ).fetchone()
+
+
+def users_delete(db: Connection, user: User):
+    """
+    Effectively deletes a user
+
+    For the sake of keeping records, the
+    user data isn't really deleted, but its
+    data set to the defaults, and a flag is raised
+
+    Parameters
+    ----------
+    db : Connection
+        Connection to the database
+    user : User
+        User to "delete"
+    """
+    db.execute(
+        """
+        UPDATE users
+        SET
+          gcash = '',
+          registered = false
+        where
+          id = %s
+        """,
+        (user.id,),
+    )

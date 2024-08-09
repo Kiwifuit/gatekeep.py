@@ -12,5 +12,9 @@ mypy-extensions==1.0.0
 packaging==24.1
 pathspec==0.12.1
 platformdirs==4.2.2
+psycopg==3.2.1
+psycopg-binary==3.2.1
+psycopg-pool==3.2.2
 python-dotenv==1.0.1
+typing_extensions==4.12.2
 yarl==1.9.4

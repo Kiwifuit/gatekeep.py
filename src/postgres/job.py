@@ -1,6 +1,6 @@
 from psycopg import Connection
 from psycopg.rows import class_row
-from model import (
+from .model import (
     Worker,
     Job,
     DisplayableJob,
@@ -119,14 +119,19 @@ def jobs_get_worker(db: Connection, worker: Worker):
     `float`: How much the user is willing to pay
     """
     cur = db.cursor(row_factory=class_row(WorkerJob))
-    return cur.execute(
-        """
-        SELECT jid, user.name AS user, title, content, payment
+    return list(
+        cur.execute(
+            """
+        SELECT jid, users.name AS user, title, content, payment
         FROM jobs
         LEFT JOIN users ON jobs.uid = users.id
-        WHERE wid = %s
+        WHERE
+            wid = %s
+            AND
+            completed = false
         """,
-        (worker.id),
+            (worker.id,),
+        )
     )
 
 

@@ -1,6 +1,6 @@
 from psycopg import Connection
 from psycopg.rows import class_row
-from model import Worker
+from .model import Worker
 
 
 def workers_add(db: Connection, discord_id: int, discord_name: str):
@@ -15,7 +15,7 @@ def workers_add(db: Connection, discord_id: int, discord_name: str):
         Discord User ID of the to-be worker
     """
     db.execute(
-        "INSERT INTO workers (worker_discord, worker_name) VALUES (%s, %s)",
+        "INSERT INTO workers (discord, name) VALUES (%s, %s)",
         (discord_id, discord_name),
     )
 
@@ -60,5 +60,5 @@ def workers_list_available(db: Connection) -> list[Worker]:
 
     cur = db.cursor(row_factory=class_row(Worker))
     return cur.execute(
-        "SELECT id, worker_discord FROM workers WHERE able = true"
+        "SELECT id, discord, name FROM workers WHERE able = true"
     ).fetchall()

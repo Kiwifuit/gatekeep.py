@@ -1,5 +1,17 @@
 from psycopg import connect, Connection, Cursor
 from os import environ
+from .user import users_add, users_get
+from .worker import workers_add, workers_list_available, workers_set_available
+from .job import (
+    jobs_add,
+    jobs_get_worker,
+    jobs_list_all,
+    jobs_list_available,
+    jobs_set_completed,
+    jobs_set_completed,
+    jobs_set_worker,
+)
+from .model import UnregisteredJob
 
 
 def connect_db() -> Connection:
@@ -15,7 +27,7 @@ def connect_db() -> Connection:
     return connect(environ["PSQL_URL"])
 
 
-def init_db(db: Cursor):
+def init_db(db: Connection):
     """
     Initializes Gatekeep's Database
 
@@ -31,8 +43,8 @@ def init_db(db: Cursor):
         """
         CREATE TABLE users (
         id UUID DEFAULT gen_random_uuid() UNIQUE,
-        user_discord BIGINT NOT NULL UNIQUE,
-        user_name VARCHAR(32) NOT NULL,
+        discord BIGINT NOT NULL UNIQUE,
+        name VARCHAR(32) NOT NULL,
         gcash CHAR(11) NOT NULL UNIQUE,
 
         PRIMARY KEY (id)
@@ -44,8 +56,8 @@ def init_db(db: Cursor):
         """
         CREATE TABLE workers (
         id UUID DEFAULT gen_random_uuid() UNIQUE,
-        worker_discord BIGINT NOT NULL UNIQUE,
-        worker_name VARCHAR(32) NOT NULL,
+        discord BIGINT NOT NULL UNIQUE,
+        name VARCHAR(32) NOT NULL,
         able BOOLEAN DEFAULT true
         );
         """

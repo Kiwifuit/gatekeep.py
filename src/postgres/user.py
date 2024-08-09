@@ -1,9 +1,14 @@
 from psycopg import Connection
 from psycopg.rows import class_row
-from model import User
+from .model import User
 
 
-def users_add(db: Connection, discord_id: int, gcash_number: str, discord_name: str):
+def users_add(
+    db: Connection,
+    discord_id: int,
+    discord_name: str,
+    gcash_number: str,
+):
     """
     Adds a user
 
@@ -17,12 +22,12 @@ def users_add(db: Connection, discord_id: int, gcash_number: str, discord_name: 
         GCash Number, provided by user
     """
     db.execute(
-        "INSERT INTO users (user_discord, gcash, user_name) VALUES (%s, %s, %s)",
-        (discord_id, gcash_number, discord_name),
+        "INSERT INTO users (discord, name, gcash) VALUES (%s, %s, %s)",
+        (discord_id, discord_name, gcash_number),
     )
 
 
-def users_get(db: Connection, discord_id: int) -> list[User]:
+def users_get(db: Connection, discord_id: int) -> User:
     """
     Gets a user from the db
 
@@ -44,5 +49,5 @@ def users_get(db: Connection, discord_id: int) -> list[User]:
     conn = db.cursor(row_factory=class_row(User))
 
     return conn.execute(
-        "SELECT * FROM users WHERE user_discord = %s", (discord_id,)
+        "SELECT * FROM users WHERE discord = %s", (discord_id,)
     ).fetchone()

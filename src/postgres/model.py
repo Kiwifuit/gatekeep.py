@@ -62,14 +62,6 @@ class Worker:
     Discord User Name of the worker
     """
 
-    available: bool
-    """
-    Whether or not this user is available
-
-    This value is generated automatically
-
-    """
-
 
 @dataclass(frozen=True, repr=True)
 class Job:
